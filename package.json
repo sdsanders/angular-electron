@@ -91,6 +91,7 @@
     "node": ">=10.13.0"
   },
   "dependencies": {
+    "menubar": "8.0.0",
     "tslib": "1.10.0"
   }
 }
