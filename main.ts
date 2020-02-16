@@ -1,4 +1,6 @@
+import { Notification } from 'electron';
 import { menubar } from 'menubar';
+import * as ioHook from 'iohook';
 import * as path from 'path';
 import * as url from 'url';
 
@@ -16,6 +18,37 @@ const mb = menubar({
   },
   index: false
 });
+const streak = {
+  active: false,
+  keys: 0,
+  startTime: Date.now()
+};
+
+function handleKeyboardEvent(event) {
+  if (!streak.active) {
+    streak.active = true;
+    streak.startTime = Date.now();
+  }
+
+  streak.keys++;
+  mb.window.webContents.send('current-streak', streak.keys);
+}
+let minStreak = 10;
+function handleMouseEvent(event) {
+  if (!streak.active) { return };
+
+  if (streak.keys > minStreak) {
+    const notification = new Notification({
+      title: 'Streak broken!',
+      body: `You typed ${streak.keys} keys during that streak`
+    });
+
+    notification.show();
+  }
+
+  streak.active = false;
+  streak.keys = 0;
+}
 
 mb.on('ready', (): void => {
   mb.showWindow();
@@ -36,5 +69,13 @@ mb.on('ready', (): void => {
   if (serve) {
     mb.window.webContents.openDevTools();
   }
-  // your app code here
+
+  ioHook.on('keyup', handleKeyboardEvent);
+
+  ioHook.on('mousemove', handleMouseEvent);
+  ioHook.on('mouseclick', handleMouseEvent);
+  ioHook.on('mousedrag', handleMouseEvent);
+  ioHook.on('mousewheel', handleMouseEvent);
+
+  ioHook.start();
 });

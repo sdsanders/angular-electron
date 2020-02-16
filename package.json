@@ -91,7 +91,22 @@
     "node": ">=10.13.0"
   },
   "dependencies": {
+    "iohook": "0.6.5",
     "menubar": "8.0.0",
     "tslib": "1.10.0"
+  },
+  "iohook": {
+    "targets": [
+      "electron-76"
+    ],
+    "platforms": [
+      "win32",
+      "darwin",
+      "linux"
+    ],
+    "arches": [
+      "x64",
+      "ia32"
+    ]
   }
 }
