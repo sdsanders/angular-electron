@@ -3,6 +3,7 @@ import { menubar } from 'menubar';
 import * as ioHook from 'iohook';
 import * as path from 'path';
 import * as url from 'url';
+import { Duration } from 'luxon';
 
 const args = process.argv.slice(1),
     serve = args.some(val => val === '--serve');
@@ -37,10 +38,12 @@ let minStreak = 10;
 function handleMouseEvent(event) {
   if (!streak.active) { return };
 
+  const duration = Duration.fromMillis(Date.now() - streak.startTime);
+
   if (streak.keys > minStreak) {
     const notification = new Notification({
       title: 'Streak broken!',
-      body: `You typed ${streak.keys} keys during that streak`
+      body: `You typed ${streak.keys} keys during that streak, lasting ${duration.as('minutes').toFixed(2)} minutes`
     });
 
     notification.show();
